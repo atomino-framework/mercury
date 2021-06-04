@@ -8,6 +8,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Cache\ItemInterface;
+use function Atomino\dic;
 
 class_alias(\Symfony\Contracts\Cache\CacheInterface::class, CacheInterface::class);
 
@@ -17,7 +18,7 @@ class Cache extends Handler{
 
 	public function __construct(private EventDispatcher $eventDispatcher, private CacheInterface $storage){ }
 
-	static function SetCache(int $interval){ Application::DIC()->get(EventDispatcher::class)->dispatch(new Event($interval), Event::request); }
+	static function SetCache(int $interval){ dic()->get(EventDispatcher::class)->dispatch(new Event($interval), Event::request); }
 
 	public function handle(Request $request): Response{
 		$this->eventDispatcher->addListener(Event::request, function (Event $event){ $this->cacheRequest = $event->interval; });
