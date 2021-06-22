@@ -20,7 +20,7 @@
         "psr-4": {
             "Atomino\\Mercury\\": "src/"
         },
-        "file": [
+        "files": [
             "src/autoload.php"
         ]
     }
