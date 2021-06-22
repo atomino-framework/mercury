@@ -7,8 +7,6 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ServerBag;
-use function Atomino\dic;
-
 
 abstract class Responder extends Basic {
 
@@ -25,7 +23,7 @@ abstract class Responder extends Basic {
 
 	public function handle(Request $request): Response|null {
 		$this->initializeHandler($request);
-		return $this->respond(dic()->get(Response::class));
+		return $this->respond(new Response());
 	}
 
 	protected function initializeHandler(Request $request) {

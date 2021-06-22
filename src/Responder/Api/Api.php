@@ -1,5 +1,6 @@
 <?php namespace Atomino\Mercury\Responder\Api;
 
+use Atomino\Bundle\Authenticate\Authenticator;
 use Atomino\Mercury\Responder\Api\Attributes\Auth;
 use Atomino\Mercury\Router\Matcher\PathMatcher;
 use Atomino\Mercury\Responder\Api\Attributes\Route;
@@ -18,6 +19,7 @@ abstract class Api extends Responder {
 	const OPTIONS = 'OPTIONS';
 	const TRACE = 'TRACE';
 	const CONNECT = 'CONNECT';
+
 
 	private Response $response;
 	protected function getResponse(): Response { return $this->response; }
@@ -39,8 +41,8 @@ abstract class Api extends Responder {
 						$this->initializeHandler($request);
 
 						if ($Auth = Auth::get($method)) {
-							if (!$Auth->authCheck()) return $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
-							if (!$Auth->roleCheck()) return $response->setStatusCode(Response::HTTP_FORBIDDEN);
+							if (!$Auth->authCheck($this->container->get(Authenticator::class))) return $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
+							if (!$Auth->roleCheck($this->container->get(Authenticator::class))) return $response->setStatusCode(Response::HTTP_FORBIDDEN);
 						}
 
 						$result = $method->invoke($this, ...$attributes);

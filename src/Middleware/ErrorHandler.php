@@ -2,6 +2,7 @@
 
 use Atomino\Mercury\Pipeline\Handler;
 use Atomino\Mercury\Pipeline\Pipeline;
+use DI\Container;
 use JetBrains\PhpStorm\Pure;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -9,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ErrorHandler extends Handler {
-	public function __construct(private Logger $logger) { }
+	public function __construct(private Logger $logger, private Container $container) { }
 
 	#[Pure] static public function setup(array|string $nullHandler, array $statusHandlers = []) { return parent::args(get_defined_vars()); }
 
@@ -22,9 +23,7 @@ class ErrorHandler extends Handler {
 				$statusHandler = $this->arguments->get('statusHandlers')[$response->getStatusCode()];
 				if(!is_array($statusHandler)) $statusHandler = [$statusHandler];
 				/** @var Handler $handler */
-				$handler = Pipeline::create(function (Pipeline $pipeline) use ($response, $statusHandler) {
-					$pipeline->pipe(...$statusHandler);
-				});
+				$handler = $this->container->make(Pipeline::class)->pipe(...$statusHandler);
 			} else {
 				$response = null;
 			}
@@ -34,9 +33,7 @@ class ErrorHandler extends Handler {
 			/** @var Handler $handler */
 			$nullHandler = $this->arguments->get('nullHandler');
 			if(!is_array($nullHandler)) $nullHandler = [$nullHandler];
-			$handler = Pipeline::create(function (Pipeline $pipeline) use ($nullHandler) {
-				$pipeline->pipe(...$nullHandler);
-			});
+			$handler = $this->container->make(Pipeline::class)->pipe(...$nullHandler);
 		}
 
 		if (!is_null($handler)) {

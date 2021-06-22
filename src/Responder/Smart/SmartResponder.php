@@ -9,6 +9,7 @@ use Atomino\Mercury\Responder\Responder;
 use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Cache\FilesystemCache;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -62,29 +63,28 @@ abstract class SmartResponder extends Responder {
 	abstract protected function prepare(Response $response);
 
 	private function setup() {
-		$SMARTRESPONDER = new \ReflectionClass(static::class);
-
-		$Init = Init::get($SMARTRESPONDER);
+		$smartResponderReflection = new \ReflectionClass(static::class);
+		$initAttr = Init::get($smartResponderReflection);
+		/** @var SmartResponderConfig $config */
+		$config = $this->container->get(SmartResponderConfig::class);
+		
+		$this->template = $initAttr->template;
+		$environment = $initAttr->environment;
+		$this->smart['frontendVersion'] = $config['frontend-version'];
 
 		$loader = new FilesystemLoader();
-		$loader->addPath(__DIR__ . '/@resource', 'smartpage');
+		$namespaces = $config('twig.namespaces');
+		if (array_key_exists($environment, $namespaces)) $namespaces['__main__'] = $namespaces[$environment];
+		$namespaces['smartpage'] = __DIR__ . '/@resource';
+		foreach ($namespaces as $namespace => $path) $loader->addPath($path, $namespace);
+		$twigDebug = $config('twig.debug');
+		$this->twig = new Environment($loader, ['debug' => $twigDebug, 'auto_reload' => $twigDebug]);
+		$this->twig->setCache($config('twig.cache'));
 
-		$this->twig = new Environment($loader, [
-			'debug'       => $Init->debug,
-			'auto_reload' => $Init->debug,
-		]);
-
-		$this->smart['frontendVersion'] = $Init->frontendVersion;
-		$this->template = $Init->template;
-
-		if (!is_null($Init->twigCache)) $this->twig->setCache($Init->twigCache);
-		foreach ($Init->namespaces as $namespace => $path) $loader->addPath($path, $namespace);
-
-		Args::get($SMARTRESPONDER)?->set($this->smart);
-		foreach (JS::all($SMARTRESPONDER) as $JS) $JS->set($this->smart);
-		foreach (CSS::all($SMARTRESPONDER) as $CSS) $CSS->set($this->smart);
-
-		Cache::get($SMARTRESPONDER);
+		Args::get($smartResponderReflection)?->set($this->smart);
+		foreach (JS::all($smartResponderReflection) as $JS) $JS->set($this->smart);
+		foreach (CSS::all($smartResponderReflection) as $CSS) $CSS->set($this->smart);
+		Cache::get($smartResponderReflection);
 	}
 }
 

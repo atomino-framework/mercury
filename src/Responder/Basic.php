@@ -4,8 +4,6 @@ use Atomino\Mercury\Pipeline\Handler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use function Atomino\dic;
-
 
 abstract class Basic extends Handler {
 
@@ -13,7 +11,7 @@ abstract class Basic extends Handler {
 
 	public function handle(Request $request): Response|null {
 		$this->request = $request;
-		return $this->respond(dic()->get(Response::class));
+		return $this->respond(new Response());
 	}
 
 	protected final function redirect($url = '/', $statusCode = 302, $immediate = true): Response {

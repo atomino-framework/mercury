@@ -11,41 +11,42 @@ use function Atomino\inject;
 
 abstract class Router extends Handler {
 
-	private Pipeline|null $subPipeLine = null;
+	private bool $matches = false;
+
 	protected Request $request;
 
 	public function handle(Request $request): Response|null {
 		$this->request = $request;
 		$this->route();
-		if (is_null($this->subPipeLine)) return $this->next($request);
-		else return $this->subPipeLine->execute();
+		return $this->next($this->request);
 	}
 
 	abstract protected function route(): void;
 
 	public function __invoke($method = null, $path = null, $host = null, $port = null, $scheme = null): Pipeline|null {
-		if (is_null($this->subPipeLine)) {
-			$request = $this->request;
-			if (
-				(is_null($method) || $method === $this->request->getMethod()) &&
-				(is_null($port) || $port == $this->request->getPort()) &&
-				(is_null($scheme) || $scheme === $this->request->getScheme()) &&
-				(is_null($path) || (new PathMatcher($path, $request))->isMatches()) &&
-				(is_null($host) || (new HostMatcher($host, $request))->isMatches())
-			) {
-				$this->subPipeLine = new Pipeline($request);
-			}
+		if ($this->matches) return null;
+		$request = $this->request;
+		if (
+			(is_null($method) || $method === $this->request->getMethod()) &&
+			(is_null($port) || $port == $this->request->getPort()) &&
+			(is_null($scheme) || $scheme === $this->request->getScheme()) &&
+			(is_null($path) || (new PathMatcher($path, $request))->isMatches()) &&
+			(is_null($host) || (new HostMatcher($host, $request))->isMatches())
+		) {
+			$this->matches = true;
+			$this->request = $request;
+			return $this->pipeLine->clear();
 		}
-		return $this->subPipeLine;
+		return null;
 	}
 
-	static public function create(callable $route): Router {
-		$router = new class extends Router {
-			protected \Closure $routing;
-			protected function route(): void { ($this->routing)($this); }
-		};
-		inject($router, 'routing', \Closure::bind($route, $router, get_class($router)));
-		return $router;
-
-	}
+//	static public function create(callable $route): Router {
+//		$router = new class extends Router {
+//			protected \Closure $routing;
+//			protected function route(): void { ($this->routing)($this); }
+//		};
+//		inject($router, 'routing', \Closure::bind($route, $router, get_class($router)));
+//		return $router;
+//
+//	}
 }
