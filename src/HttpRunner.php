@@ -4,10 +4,15 @@ use Atomino\Core\Runner\HttpRunnerInterface;
 use Atomino\Mercury\Pipeline\Handler;
 use Atomino\Mercury\Pipeline\Pipeline;
 use Symfony\Component\HttpFoundation\Request;
+use function Atomino\debug;
 
 class HttpRunner implements HttpRunnerInterface {
 
-	public function __construct(Request $request, private Pipeline $pipeline) { }
+	const DEBUG_CHANNEL_HTTP_REQUEST = 'HTTP';
+
+	public function __construct(Request $request, private Pipeline $pipeline) {
+		debug($request,self::DEBUG_CHANNEL_HTTP_REQUEST);
+	}
 
 	public function run(): void { $this->pipeline->handle(); }
 
