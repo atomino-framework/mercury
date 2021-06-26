@@ -10,9 +10,7 @@ class HttpRunner implements HttpRunnerInterface {
 
 	const DEBUG_CHANNEL_HTTP_REQUEST = 'HTTP';
 
-	public function __construct(Request $request, private Pipeline $pipeline) {
-		debug($request,self::DEBUG_CHANNEL_HTTP_REQUEST);
-	}
+	public function __construct(Request $request, private Pipeline $pipeline) {}
 
 	public function run(): void { $this->pipeline->handle(); }
 
