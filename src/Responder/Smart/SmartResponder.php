@@ -43,8 +43,8 @@ abstract class SmartResponder extends Responder {
 			'data'            => new ParameterBag(),
 		];
 
-		$this->prepare($response);
 		$this->setup();
+		$this->prepare($response);
 
 		$smart = $this->smart;
 		$smart['data'] = base64_encode(json_encode($this->smart['data']->all()));
