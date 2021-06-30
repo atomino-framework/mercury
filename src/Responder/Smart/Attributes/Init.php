@@ -8,5 +8,7 @@ use function Atomino\dic;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 class Init extends Attr {
-	public function __construct(public string $environment, public string $template) { }
+	public function __construct(public string $environment, public string $template, public string|null $mobileTemplate = null) {
+		if(is_null($this->mobileTemplate)) $this->mobileTemplate = $this->template;
+	}
 }

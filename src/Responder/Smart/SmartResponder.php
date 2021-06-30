@@ -67,8 +67,8 @@ abstract class SmartResponder extends Responder {
 		$initAttr = Init::get($smartResponderReflection);
 		/** @var SmartResponderConfig $config */
 		$config = $this->container->get(SmartResponderConfig::class);
-		
-		$this->template = $initAttr->template;
+
+		$this->template = $this->request->attributes->get('isMobile') ? $initAttr->mobileTemplate : $initAttr->template;
 		$environment = $initAttr->environment;
 		$this->smart['frontendVersion'] = $config['frontend-version'];
 
