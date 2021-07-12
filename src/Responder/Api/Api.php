@@ -20,6 +20,9 @@ abstract class Api extends Responder {
 	const TRACE = 'TRACE';
 	const CONNECT = 'CONNECT';
 
+	const VALIDATION_ERROR = 422;
+	const TOO_MANY_REQUESTS = 429;
+
 
 	private Response $response;
 	protected function getResponse(): Response { return $this->response; }

@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "ext-json": "*"
+        "ext-json": "*",
+        "symfony/rate-limiter": "^5.3"
     },
     "autoload": {
         "psr-4": {
