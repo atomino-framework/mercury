@@ -5,7 +5,7 @@ use Atomino\Neutrons\Attr;
 use Attribute;
 use JetBrains\PhpStorm\Pure;
 
-#[Attribute(Attribute::TARGET_METHOD)]
+#[Attribute()]
 class Auth extends Attr {
 
 	#[Pure] public function __construct(public string|false|null $role = null) { }

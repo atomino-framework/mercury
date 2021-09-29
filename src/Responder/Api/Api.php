@@ -43,7 +43,9 @@ abstract class Api extends Responder {
 					if((new PathMatcher($pattern, $request, $attributes))->isMatches()){
 						$this->initializeHandler($request);
 
-						if ($Auth = Auth::get($method)) {
+						$Auth = Auth::get(new \ReflectionClass(static::class));
+
+						if ($Auth || $Auth = Auth::get($method)) {
 							if (!$Auth->authCheck($this->container->get(Authenticator::class))) return $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
 							if (!$Auth->roleCheck($this->container->get(Authenticator::class))) return $response->setStatusCode(Response::HTTP_FORBIDDEN);
 						}
