@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ErrorHandler extends Handler {
-	public function __construct(private Logger $logger, private Container $container) { }
+	public function __construct(private Logger $logger, protected Container $container) { }
 
 	#[Pure] static public function setup(array|string $nullHandler, array $statusHandlers = []) { return parent::args(get_defined_vars()); }
 

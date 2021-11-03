@@ -4,6 +4,7 @@ use Atomino\Bundle\Authenticate\Authenticator;
 use Atomino\Neutrons\Attr;
 use Attribute;
 use JetBrains\PhpStorm\Pure;
+use function Atomino\debug;
 
 #[Attribute()]
 class Auth extends Attr {
