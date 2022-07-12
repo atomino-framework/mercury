@@ -12,7 +12,9 @@ class HttpRunner implements HttpRunnerInterface {
 
 	public function __construct(private Pipeline $pipeline) {}
 
-	public function run(): void { $this->pipeline->handle(); }
+	public function run(): void {
+		$this->pipeline->handle();
+	}
 
 	public function pipe($handler, $arguments = null): static {
 		$this->pipeline->pipe($handler, $arguments);
