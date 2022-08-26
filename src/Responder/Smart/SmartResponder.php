@@ -27,18 +27,27 @@ abstract class SmartResponder extends Responder {
 		'language'        => 'string',
 		'title'           => 'string',
 		'data'            => ParameterBag::class,
+		'url'             => 'string',
+		'host'            => 'string',
 	])]
 	protected array $smart = [];
+
+	public function setTitle(string $title) { $this->smart["title"] = $title; }
+	public function setClass(string $class) { $this->smart["class"] = $class; }
+	public function setLanguage(string $language) { $this->smart["language"] = $language; }
+	public function getSmartDataBag() { return $this->smart["data"]; }
 
 	protected function respond(Response $response): Response {
 		$this->smart = [
 			'js'              => [],
 			'css'             => [],
-			'forntendVersion' => 0,
+			'frontendVersion' => 0,
 			'class'           => null,
 			'language'        => null,
 			'title'           => null,
 			'data'            => new ParameterBag(),
+			'url'             => $this->request->getUri(),
+			'host'            => $this->request->getSchemeAndHttpHost(),
 		];
 
 		$this->setup();

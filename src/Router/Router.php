@@ -23,14 +23,19 @@ abstract class Router extends Handler {
 
 	abstract protected function route(): void;
 
-	public function __invoke($method = null, $path = null, $host = null, $port = null, $scheme = null): Pipeline|null {
+	public function __invoke(
+		string|null $method = null,
+		string|null|array $path = null,
+		string|null $host = null,
+		string|null $port = null,
+		string|null $scheme = null): Pipeline|null {
 		if ($this->matches) return null;
 		$request = $this->request;
 		if (
 			(is_null($method) || $method === $this->request->getMethod()) &&
 			(is_null($port) || $port == $this->request->getPort()) &&
 			(is_null($scheme) || $scheme === $this->request->getScheme()) &&
-			(is_null($path) || (new PathMatcher($path, $request))->isMatches()) &&
+			(is_null($path) || PathMatcher::matchAll($path, $request)) &&
 			(is_null($host) || (new HostMatcher($host, $request))->isMatches())
 		) {
 			$this->matches = true;
